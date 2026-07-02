@@ -1,20 +1,17 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import { MongoClient, ServerApiVersion } from "mongodb";
 
-const uri = process.env.MONGODB_URI;
-
-let client = null;
-let db = null;
+let client;
+let db;
 
 export const connectDB = async () => {
   try {
+    const uri = process.env.MONGODB_URI;
+
     if (!uri) {
-      console.warn(" MONGODB_URI not found.");
-      console.warn(" Running without database.");
-      return;
+      throw new Error("MONGODB_URI not found.");
     }
+
+    console.log(" Connecting to MongoDB Atlas...");
 
     client = new MongoClient(uri, {
       serverApi: {
@@ -24,21 +21,17 @@ export const connectDB = async () => {
       },
     });
 
-    console.log(" Connecting to MongoDB...");
-
     await client.connect();
+
+    await client.db("admin").command({ ping: 1 });
 
     db = client.db("bibliodrop");
 
-    await db.command({ ping: 1 });
-
-    console.log(" MongoDB Connected");
+    console.log(" MongoDB Connected Successfully");
   } catch (error) {
-    console.error("MongoDB Connection Failed");
+    console.error(" MongoDB Connection Failed");
     console.error(error.message);
-
-    client = null;
-    db = null;
+    process.exit(1);
   }
 };
 
@@ -51,9 +44,8 @@ export const getDB = () => {
 };
 
 export const closeDB = async () => {
-  if (!client) return;
-
-  await client.close();
-
-  console.log(" MongoDB Connection Closed");
+  if (client) {
+    await client.close();
+    console.log("🔒 MongoDB Connection Closed");
+  }
 };

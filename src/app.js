@@ -4,6 +4,11 @@ import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
+import router from "./routes/index.js";
+
+import { notFound } from "./middleware/notFound.js";
+import { errorHandler } from "./middleware/errorHandler.js";
+
 const app = express();
 
 app.use(helmet());
@@ -24,12 +29,17 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.get("/", (req, res) => {
-  res.status(200).json({
+  res.json({
     success: true,
     project: "BiblioDrop API",
-    version: "1.0.0",
-    status: "Running ",
+    status: "Running 🚀",
   });
 });
+
+app.use("/api/v1", router);
+
+app.use(notFound);
+
+app.use(errorHandler);
 
 export default app;
