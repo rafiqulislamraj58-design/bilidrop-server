@@ -1,12 +1,42 @@
 import { Router } from "express";
 
+import auth from "../../middleware/auth.js";
+import role from "../../middleware/role.js";
+
+import {
+  createBookController,
+  getBooksController,
+  getBookController,
+  updateBookController,
+  deleteBookController,
+} from "./book.controller.js";
+
 const router = Router();
 
-router.get("/", (req, res) => {
-  res.json({
-    success: true,
-    module: "Books Module",
-  });
-});
+router.get("/", getBooksController);
+
+
+router.get("/:id", getBookController);
+
+
+router.post(
+  "/",
+  auth,
+  role("admin"),
+  createBookController
+);
+router.patch(
+  "/:id",
+  auth,
+  role("admin"),
+  updateBookController
+);
+
+router.delete(
+  "/:id",
+  auth,
+  role("admin"),
+  deleteBookController
+);
 
 export default router;

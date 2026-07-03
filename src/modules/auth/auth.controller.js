@@ -8,6 +8,21 @@ import {
 } from "./auth.service.js";
 
 export const register = catchAsync(async (req, res) => {
+  console.log("========== REGISTER ==========");
+  console.log("Headers:");
+  console.log(req.headers);
+
+  console.log("Body:");
+  console.log(req.body);
+
+  if (!req.body.name || !req.body.email || !req.body.password) {
+    return res.status(400).json({
+      success: false,
+      message: "name, email and password are required",
+      body: req.body,
+    });
+  }
+
   const user = await registerUser(req.body);
 
   const token = generateToken({
@@ -29,6 +44,9 @@ export const register = catchAsync(async (req, res) => {
 });
 
 export const login = catchAsync(async (req, res) => {
+  console.log("========== LOGIN ==========");
+  console.log(req.body);
+
   const user = await loginUser(
     req.body.email,
     req.body.password
