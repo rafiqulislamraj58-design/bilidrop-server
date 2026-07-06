@@ -8,24 +8,22 @@ import {
   updateBook,
   deleteBook,
 } from "./book.service.js";
+
 export const createBookController = catchAsync(async (req, res) => {
   const book = await createBook(req.body);
 
   return res.status(201).json(
-    new ApiResponse(
-      201,
-      book,
-      "Book Created Successfully"
-    )
+    new ApiResponse(201, book, "Book Created Successfully")
   );
 });
+
 export const getBooksController = catchAsync(async (req, res) => {
-  const books = await getAllBooks();
+  const result = await getAllBooks(req.query);
 
   return res.json(
     new ApiResponse(
       200,
-      books,
+      result,
       "Books fetched successfully"
     )
   );

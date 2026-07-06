@@ -2,6 +2,8 @@ import { Router } from "express";
 
 import auth from "../../middleware/auth.js";
 import role from "../../middleware/role.js";
+import validateRequest from "../../middleware/validateRequest.js";
+import { createBookSchema } from "./book.validation.js";
 
 import {
   createBookController,
@@ -23,6 +25,7 @@ router.post(
   "/",
   auth,
   role("admin"),
+  validateRequest(createBookSchema),
   createBookController
 );
 router.patch(

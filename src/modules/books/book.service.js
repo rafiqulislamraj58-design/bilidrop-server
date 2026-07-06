@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { getDB } from "../../config/database.js";
 
+
 export const createBook = async (bookData) => {
   const db = getDB();
 
@@ -19,11 +20,65 @@ export const createBook = async (bookData) => {
   };
 };
 
-export const getAllBooks = async () => {
+export const getAllBooks = async (query = {}) => {
   const db = getDB();
 
-  return await db.collection("books").find({}).toArray();
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const filter = {};
+
+  if (query.search) {
+    filter.title = {
+      $regex: query.search,
+      $options: "i",
+    };
+  }
+
+  if (query.category) {
+    filter.category = query.category;
+  }
+
+  let sort = {
+    createdAt: -1,
+  };
+
+  if (query.sort) {
+    if (query.sort.startsWith("-")) {
+      sort = {
+        [query.sort.substring(1)]: -1,
+      };
+    } else {
+      sort = {
+        [query.sort]: 1,
+      };
+    }
+  }
+
+  const books = await db
+    .collection("books")
+    .find(filter)
+    .sort(sort)
+    .skip(skip)
+    .limit(limit)
+    .toArray();
+
+  const total = await db
+    .collection("books")
+    .countDocuments(filter);
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+    books,
+  };
 };
+
 
 export const getSingleBook = async (id) => {
   const db = getDB();
@@ -32,6 +87,8 @@ export const getSingleBook = async (id) => {
     _id: new ObjectId(id),
   });
 };
+
+
 export const updateBook = async (id, data) => {
   const db = getDB();
 
@@ -49,6 +106,7 @@ export const updateBook = async (id, data) => {
 
   return await getSingleBook(id);
 };
+
 
 export const deleteBook = async (id) => {
   const db = getDB();
