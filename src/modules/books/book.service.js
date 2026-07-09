@@ -6,9 +6,37 @@ export const createBook = async (bookData) => {
   const db = getDB();
 
   const book = {
-    ...bookData,
-    status: "available",
+    title: bookData.title,
+    author: bookData.author,
+    category: bookData.category,
+
+    description: bookData.description || "",
+
+    isbn: bookData.isbn || "",
+
+    language: bookData.language || "",
+
+    price: bookData.price,
+
+    stock: bookData.stock,
+
+    totalCopies: bookData.totalCopies || bookData.stock,
+
+    availableCopies:
+      bookData.availableCopies || bookData.stock,
+
+    coverImage: bookData.coverImage || "",
+
+    pdfUrl: bookData.pdfUrl || "",
+
+    publishedYear: bookData.publishedYear || null,
+
+    publisher: bookData.publisher || "",
+
+    status: bookData.status || "available",
+
     createdAt: new Date(),
+
     updatedAt: new Date(),
   };
 
@@ -19,7 +47,6 @@ export const createBook = async (bookData) => {
     ...book,
   };
 };
-
 export const getAllBooks = async (query = {}) => {
   const db = getDB();
 
