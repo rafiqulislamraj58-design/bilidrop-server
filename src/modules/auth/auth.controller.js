@@ -89,3 +89,22 @@ export const logout = catchAsync(async (req, res) => {
     )
   );
 });
+export const generateBackendToken = catchAsync(async (req, res) => {
+  const { id, email, name, role } = req.body;
+
+  const token = generateToken({
+    id,
+    email,
+    role: role || "user",
+  });
+
+  return res.json(
+    new ApiResponse(
+      200,
+      {
+        token,
+      },
+      "Backend JWT Generated Successfully"
+    )
+  );
+});
